@@ -1,0 +1,12 @@
+<div{{ attributes }}>
+    <div class="grid grid-cols-3 gap-4">
+        {% for pokemon in pokemons %}
+            <div class="p-4 bg-white shadow-md rounded-lg">
+                <h3 class="text-lg font-bold">{{ pokemon.name }}</h3>
+                <p class="text-sm text-gray-600">Type : {{ pokemon.types|join(', ') }}</p>
+                <p class="text-sm text-gray-600">Poids : {{ pokemon.weight }} kg</p>
+            </div>
+        {% endfor %}
+    </div>
+
+</div>

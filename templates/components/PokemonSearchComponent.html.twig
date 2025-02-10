@@ -1,0 +1,62 @@
+<div{{ attributes }}>
+    <div class="p-6 bg-white shadow-md rounded-lg">
+        <!-- Barre de recherche -->
+        <div class="flex items-center space-x-2 mb-4">
+            <input type="text" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                   placeholder="Rechercher un Pokémon..."
+                  data-model="query"     @input.debounce.300ms="$live.updateResults()"/>
+        </div>
+
+        <!-- Filtres -->
+        <div class="grid grid-cols-2 gap-4">
+            <!-- Types -->
+            <div>
+                <label class="block font-bold mb-2">Types :</label>
+                <div class="flex flex-wrap gap-2">
+                    {% for type in types %}
+                        <label class="flex items-center space-x-2 bg-gray-200 px-2 py-1 rounded-md cursor-pointer">
+                            <input type="checkbox" value="{{ type.id }}"
+                                   data-live-sync="selectedTypes"
+                                   data-live-action="updateResults"/>
+                            <span class="text-gray-700">{{ type.name }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Poids -->
+            <div>
+                <label class="block font-bold mb-2">Poids :</label>
+                <div class="flex items-center space-x-2">
+                    <span class="text-gray-500">Min</span>
+                    <input type="range" min="0" max="200" step="1"
+                           class="w-full"
+                           data-live-sync="minWeight"
+                           data-live-action="updateResults"/>
+                    <span class="text-gray-500">Max</span>
+                    <input type="range" min="0" max="200" step="1"
+                           class="w-full"
+                           data-live-sync="maxWeight"
+                           data-live-action="updateResults"/>
+                </div>
+            </div>
+        </div>
+
+        <!-- Liste des résultats -->
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
+            {% for pokemon in this.pokemons %}
+                <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                    <img src="{{ pokemon.image_url }}" alt="{{ pokemon.name }}" class="w-full h-40 object-cover">
+                    <div class="p-4">
+                        <h3 class="text-lg font-bold text-gray-900">{{ pokemon.name }}</h3>
+                        <p class="text-sm text-gray-600">Type : <span class="font-semibold">{{ pokemon.types|join(', ') }}</span></p>
+                        <p class="text-sm text-gray-600">Poids : <span class="font-semibold">{{ pokemon.weight }} kg</span></p>
+                    </div>
+                </div>
+            {% else %}
+                <p class="text-center text-gray-500 col-span-4">Aucun Pokémon trouvé.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>

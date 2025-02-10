@@ -4,7 +4,9 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-
+  meilisearch_default_host: "localhost:7700"
+  meilisearch_key:    '%env(MEILISEARCH_KEY)%'
+  meilisearch_host:   '%env(MEILISEARCH_HOST)%'
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -22,3 +24,8 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    Nramos\SearchIndexer\Indexer\SearchClientInterface:
+       class: Nramos\SearchIndexer\Meilisearch\MeilisearchClient
+       bind:
+        $host: '%meilisearch_host%'
+        $apiKey: '%meilisearch_key%'
