@@ -2,6 +2,7 @@
 
 namespace App\Twig\Components;
 
+use AllowDynamicProperties;
 use App\Entity\TypePokemon;
 use App\Services\PokemonSearchService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -11,7 +12,7 @@ use Symfony\UX\LiveComponent\Attribute\LiveProp;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
 use Symfony\UX\TwigComponent\Attribute\ExposeInTemplate;
 
-#[AsLiveComponent()]
+#[AllowDynamicProperties] #[AsLiveComponent()]
 final class PokemonSearchComponent
 {
     use DefaultActionTrait;
@@ -27,34 +28,40 @@ final class PokemonSearchComponent
     #[LiveProp(writable: true)]
     public ?int $maxWeight = null;
 
-    #[LiveProp(writable: true)]
-    public array $types = [];
-
-    #[LiveProp(writable: true)]
-    public array $pokemons = [];
 
     public function __construct(
         private readonly PokemonSearchService $searchService,
         private readonly EntityManagerInterface $em,
     )
     {
-        $availableTypes = $this->em->getRepository(TypePokemon::class)->findAll();
-        foreach ($availableTypes as $type) {
-            $this->types[] = ['id' => $type->getId(), 'name' => $type->getName()];
+        $allTypes = $this->em->getRepository(TypePokemon::class)->findAll();
+        foreach ($allTypes as $type) {
+             $this->allTypes[$type->getName()] = 0;
         }
-        $this->updateResults();
     }
+    public function types() {
 
-    #[LiveAction]
-    public function updateResults(): void
-    {
-        dd($this->query);
-        $this->pokemons = $this->searchService->search(
+        $pokemonsDto = $this->searchService->search(
             $this->query,
             $this->selectedTypes,
             $this->minWeight,
             $this->maxWeight
-        )['hits'];
+        );
+        $typesToReturn = $this->allTypes;
+
+        foreach($pokemonsDto->getMeta()->getFacetsDistribution()['types.name'] as $name => $count) {
+           $typesToReturn[$name] = $count;
+        }
+        return $typesToReturn;
+    }
+    public function pokemons(): array
+    {
+        return $this->searchService->search(
+            $this->query,
+            $this->selectedTypes,
+            $this->minWeight,
+            $this->maxWeight
+        )->toArray();
     }
 
 }

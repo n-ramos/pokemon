@@ -6,12 +6,15 @@ use App\Repository\PokemonRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Nra\ReportingBundle\Attributes\Reportable;
+use Nra\ReportingBundle\Attributes\ReportableProperty;
 use Nramos\SearchIndexer\Annotation\SearchIndex;
 use Nramos\SearchIndexer\Annotation\SearchProperty;
 use Nramos\SearchIndexer\Indexer\IndexableEntityInterface;
 
 #[ORM\Entity(repositoryClass: PokemonRepository::class)]
 #[SearchIndex('pokemon')]
+#[Reportable]
 class Pokemon implements IndexableEntityInterface
 {
     #[ORM\Id]
@@ -25,14 +28,17 @@ class Pokemon implements IndexableEntityInterface
 
     #[ORM\Column(length: 255)]
     #[SearchProperty('name', filterable: true, sortable: true)]
+
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
     #[SearchProperty('image', filterable: false, sortable: false)]
+    #[ReportableProperty(label: 'Image', description: 'The name of the Pokemon')]
     private ?string $image = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[SearchProperty('height', filterable: false, sortable: true)]
+    #[ReportableProperty(label: 'Name', description: 'The name of the Pokemon')]
     private ?string $height = null;
 
     #[ORM\Column(length: 255)]
